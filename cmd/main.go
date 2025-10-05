@@ -1,19 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/http"
+	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/routes"
+	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/server"
 )
 
 func main() {
-	fmt.Printf("Starting server at :8080")
+	srv, mux := server.NewServer(":8080")
+	//Load routes
+	routes.NewUserRoutes(mux)
 
-	http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello")
-	})
-
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal(err)
+	if err := srv.ListenAndServe(); err != nil {
+		panic(err)
 	}
 }
