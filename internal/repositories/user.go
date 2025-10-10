@@ -1,8 +1,9 @@
 package repositories
 
 import (
+	"fmt"
+
 	"github.com/jmoiron/sqlx"
-	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/db"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/domain"
 )
 
@@ -19,10 +20,11 @@ func NewUserRepository(db *sqlx.DB) UserRepository {
 }
 
 func (r *userRepository) Create(user domain.User) error {
-	_, err := db.DB.NamedExec(`
-		INSERT INTO user (name, email, password, verfication_token, verification_token_expires_at, verified, created_at, deleted) 
+	fmt.Printf("Inserting user: %+v\n", user)
+	_, err := r.db.NamedExec(`
+		INSERT INTO user (name, email, password, verification_token, verification_token_expires_at, verified, deleted) 
 		VALUES 
-		(:Name, :Email, :Password, :VerificationToken, :VerificationTokenExpiresAt, :Verified, :CreatedAt, :Deleted)`, user)
+		(:name, :email, :password, :verification_token, :verification_token_expires_at, :verified, :deleted)`, user)
 
 	return err
 }
