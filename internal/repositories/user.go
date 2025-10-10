@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/domain"
@@ -34,7 +33,6 @@ func (r *userRepository) GetByEmail(email string) domain.User {
 }
 
 func (r *userRepository) Create(user domain.User) error {
-	fmt.Printf("Inserting user: %+v\n", user)
 	_, err := r.db.NamedExec(`
 		INSERT INTO user (name, email, password, verification_token, verification_token_expires_at, verified, deleted) 
 		VALUES 
