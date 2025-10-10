@@ -10,3 +10,7 @@ type SignUpReq struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
+
+type SignUpRes struct {
+	Message string `json:"message"`
+}
