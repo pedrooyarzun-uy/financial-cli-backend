@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -9,6 +10,7 @@ import (
 
 type UserRepository interface {
 	Create(user domain.User) error
+	GetByEmail(email string) domain.User
 }
 
 type userRepository struct {
@@ -17,6 +19,18 @@ type userRepository struct {
 
 func NewUserRepository(db *sqlx.DB) UserRepository {
 	return &userRepository{db: db}
+}
+
+func (r *userRepository) GetByEmail(email string) domain.User {
+	usr := domain.User{}
+
+	err := r.db.Get(&usr, "SELECT * FROM user WHERE email = ?", email)
+
+	if err == sql.ErrNoRows {
+		return usr
+	}
+
+	return usr
 }
 
 func (r *userRepository) Create(user domain.User) error {
