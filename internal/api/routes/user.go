@@ -6,14 +6,15 @@ import (
 
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/dto"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/helpers"
+	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/services"
 )
 
-func NewUserRoutes(mux *http.ServeMux) {
-	signUp(mux)
+func NewUserRoutes(mux *http.ServeMux, s services.UserService) {
+	signUp(mux, s)
 	signIn(mux)
 }
 
-func signUp(mux *http.ServeMux) {
+func signUp(mux *http.ServeMux, s services.UserService) {
 	mux.HandleFunc("/user/sign-up", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 
@@ -39,7 +40,31 @@ func signUp(mux *http.ServeMux) {
 				return
 			}
 
-			//TODO: Sign Up - User (Service)
+			//Sign up call
+			err = s.SignUp(body)
+
+			//Response
+			response := dto.SignUpRes{}
+
+			if err == nil {
+				w.WriteHeader(200)
+				response.Message = "ok"
+				json.NewEncoder(w).Encode(response)
+				return
+			}
+
+			switch err {
+			case services.ErrUserAlreadyExists:
+				w.WriteHeader(409)
+				response.Message = services.ErrUserAlreadyExists.Error()
+			case services.ErrUserCreationFailed:
+				w.WriteHeader(400)
+				response.Message = services.ErrUserCreationFailed.Error()
+			}
+
+			json.NewEncoder(w).Encode(response)
+			return
+
 		}
 
 		w.WriteHeader(405)
