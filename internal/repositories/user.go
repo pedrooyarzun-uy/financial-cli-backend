@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/domain"
@@ -10,6 +12,7 @@ import (
 type UserRepository interface {
 	Create(user domain.User) error
 	GetByEmail(email string) domain.User
+	UpdateToken(id int, token string, tokenExpires time.Time) error
 }
 
 type userRepository struct {
@@ -39,4 +42,17 @@ func (r *userRepository) Create(user domain.User) error {
 		(:name, :email, :password, :verification_token, :verification_token_expires_at, :verified, :deleted)`, user)
 
 	return err
+}
+
+func (r *userRepository) UpdateToken(id int, token string, tokenExpires time.Time) error {
+	_, err := r.db.Exec(`
+		UPDATE user SET verification_token = ?, verification_token_expires_at = ? WHERE id = ?
+	`, token, tokenExpires, id)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
 }
