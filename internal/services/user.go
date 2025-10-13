@@ -12,7 +12,7 @@ import (
 
 type UserService interface {
 	SignUp(usr dto.SignUpReq) error
-	SignIn(usr dto.SignInReq) error
+	SignIn(usr dto.SignInReq) (string, error)
 }
 
 type userService struct {
@@ -97,6 +97,29 @@ func (s *userService) SignUp(req dto.SignUpReq) error {
 	return nil
 }
 
-func (s *userService) SignIn(dto.SignInReq) error {
-	return nil
+func (s *userService) SignIn(req dto.SignInReq) (string, error) {
+
+	res := s.ur.GetByEmail(req.Email)
+
+	//Check if user exists
+	if res.Name == "" {
+		return "", ErrIncorrectUser
+	}
+
+	//Check if user is verified
+	if !res.Verified {
+		return "", ErrUserNotVerified
+	}
+
+	if !helpers.VerifyPassword(req.Password, res.Password) {
+		return "", ErrIncorrectUser
+	}
+
+	jwt, err := helpers.GenerateJWT(res.Id, res.Name)
+
+	if err != nil {
+		return "", ErrUserCreationFailed
+	}
+
+	return jwt, nil
 }
