@@ -11,7 +11,7 @@ import (
 
 func NewUserRoutes(mux *http.ServeMux, s services.UserService) {
 	signUp(mux, s)
-	signIn(mux)
+	signIn(mux, s)
 }
 
 func signUp(mux *http.ServeMux, s services.UserService) {
@@ -73,7 +73,7 @@ func signUp(mux *http.ServeMux, s services.UserService) {
 	})
 }
 
-func signIn(mux *http.ServeMux) {
+func signIn(mux *http.ServeMux, s services.UserService) {
 	mux.HandleFunc("/user/sign-in", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 
@@ -99,7 +99,32 @@ func signIn(mux *http.ServeMux) {
 				return
 			}
 
-			//TODO: Sign In - User (Service)
+			token, err := s.SignIn(body)
+
+			response := dto.SignInRes{}
+
+			if err == nil {
+				w.WriteHeader(200)
+				response.Message = "ok"
+				response.Auth = token
+				json.NewEncoder(w).Encode(response)
+				return
+			}
+
+			switch err {
+			case services.ErrIncorrectUser:
+				w.WriteHeader(401)
+				response.Message = services.ErrUserAlreadyExists.Error()
+			case services.ErrUserNotVerified:
+				w.WriteHeader(401)
+				response.Message = services.ErrUserCreationFailed.Error()
+			case services.ErrUserCreationFailed:
+				w.WriteHeader(400)
+				response.Message = services.ErrUserCreationFailed.Error()
+			}
+
+			json.NewEncoder(w).Encode(response)
+			return
 		}
 
 		w.WriteHeader(405)
