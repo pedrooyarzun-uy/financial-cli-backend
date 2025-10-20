@@ -8,4 +8,5 @@ type Account struct {
 	Cash     float64 `db:"cash"`
 	Bank     int     `db:"bank"`
 	Owner    int     `db:"owner"`
+	Deleted  bool    `db:"deleted"`
 }
