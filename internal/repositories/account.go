@@ -1,13 +1,15 @@
 package repositories
 
 import (
+	"database/sql"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/domain"
 )
 
 type AccountRepository interface {
 	Create(acc domain.Account) error
-	Delete(id int) error
+	GetByNumber(number string) domain.Account
 }
 
 type accountRepository struct {
@@ -27,8 +29,15 @@ func (r *accountRepository) Create(acc domain.Account) error {
 	return err
 }
 
-func (r *accountRepository) Delete(id int) error {
-	_, err := r.db.Exec(`UPDATE account SET deleted = ? WHERE id = ?`, true, id)
+func (r *accountRepository) GetByNumber(number string) domain.Account {
+	acc := domain.Account{}
 
-	return err
+	err := r.db.Get(&acc, "SELECT * FROM account WHERE number = ? AND deleted = false", number)
+
+	if err == sql.ErrNoRows {
+		return acc
+	}
+
+	return acc
+
 }
