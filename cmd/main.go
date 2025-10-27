@@ -31,17 +31,20 @@ func main() {
 	ar := repositories.NewAccountRepository(db.DB)
 	tr := repositories.NewTransactionRepository(db.DB)
 	cr := repositories.NewCurrencyRepository(db.DB)
+	br := repositories.NewBankRepository(db.DB)
 
 	//Services
 	us := services.NewUserService(ur)
 	as := services.NewAccountService(ar)
 	ts := services.NewTransactionRepository(tr, ar)
 	cs := services.NewCurrencyService(cr)
+	bs := services.NewBankService(br)
 
 	routes.NewUserRoutes(mux, us)
 	routes.NewAccountRoutes(mux, as)
 	routes.NewTransactionRoutes(mux, ts)
 	routes.NewCurrencyRoutes(mux, cs)
+	routes.NewBankRoutes(mux, bs)
 
 	fmt.Println("Server is starting...")
 	if err := srv.ListenAndServe(); err != nil {
