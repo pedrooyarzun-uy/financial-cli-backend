@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -50,7 +49,6 @@ func (r *userRepository) UpdateToken(id int, token string, tokenExpires time.Tim
 	`, token, tokenExpires, id)
 
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
