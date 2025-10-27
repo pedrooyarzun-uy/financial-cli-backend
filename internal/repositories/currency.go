@@ -20,7 +20,7 @@ func NewCurrencyRepository(db *sqlx.DB) CurrencyRepository {
 func (r *currencyRepository) GetAll() []domain.Currency {
 	currencies := []domain.Currency{}
 
-	r.db.Select(currencies, "SELECT * FROM currency ORDER BY id ASC;")
+	r.db.Select(&currencies, "SELECT * FROM currency ORDER BY id ASC;")
 
 	return currencies
 }
