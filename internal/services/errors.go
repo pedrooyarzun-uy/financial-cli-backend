@@ -13,4 +13,7 @@ var (
 
 	//Create account errors
 	ErrAccountAlreadyExists = errors.New("account already exists")
+
+	//Transaction errors
+	ErrTransactionNotCorrectCurrency = errors.New("this account not accepts this type of currency")
 )
