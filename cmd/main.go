@@ -28,13 +28,19 @@ func main() {
 
 	//Repositories
 	ur := repositories.NewUserRepository(db.DB)
+	ar := repositories.NewAccountRepository(db.DB)
+	tr := repositories.NewTransactionRepository(db.DB)
 
 	//Services
 	us := services.NewUserService(ur)
+	as := services.NewAccountService(ar)
+	ts := services.NewTransactionRepository(tr, ar)
 
 	routes.NewUserRoutes(mux, us)
+	routes.NewAccountRoutes(mux, as)
+	routes.NewTransactionRoutes(mux, ts)
 
-	fmt.Println("Server is starting!")
+	fmt.Println("Server is starting...")
 	if err := srv.ListenAndServe(); err != nil {
 		panic(err)
 	}
