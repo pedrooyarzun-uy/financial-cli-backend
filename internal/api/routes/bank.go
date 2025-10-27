@@ -9,7 +9,7 @@ import (
 )
 
 func NewBankRoutes(mux *http.ServeMux, s services.BankService) {
-
+	getAllBanks(mux, s)
 }
 
 func getAllBanks(mux *http.ServeMux, s services.BankService) {
