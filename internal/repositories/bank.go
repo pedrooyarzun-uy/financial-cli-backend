@@ -20,7 +20,10 @@ func NewBankRepository(db *sqlx.DB) BankRepository {
 func (r *bankRepository) GetAll() []domain.Bank {
 	banks := []domain.Bank{}
 
-	r.db.Get(&banks, "SELECT * FROM bank ORDER BY name ASC")
+	err := r.db.Select(&banks, "SELECT * FROM bank ORDER BY name ASC")
 
+	if err != nil {
+		return nil
+	}
 	return banks
 }
