@@ -114,7 +114,7 @@ func signIn(mux *http.ServeMux, s services.UserService) {
 			switch err {
 			case services.ErrIncorrectUser:
 				w.WriteHeader(401)
-				response.Message = services.ErrUserAlreadyExists.Error()
+				response.Message = services.ErrIncorrectUser.Error()
 			case services.ErrUserNotVerified:
 				w.WriteHeader(401)
 				response.Message = services.ErrUserCreationFailed.Error()
