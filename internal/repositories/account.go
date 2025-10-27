@@ -10,6 +10,7 @@ import (
 type AccountRepository interface {
 	Create(acc domain.Account) error
 	GetByNumber(number string) domain.Account
+	GetCurrency(acc int) int
 }
 
 type accountRepository struct {
@@ -40,4 +41,12 @@ func (r *accountRepository) GetByNumber(number string) domain.Account {
 
 	return acc
 
+}
+
+func (r *accountRepository) GetCurrency(acc int) int {
+	var cur int
+
+	r.db.Get(&cur, "SELECT currency FROM account WHERE id = ?", acc)
+
+	return cur
 }
