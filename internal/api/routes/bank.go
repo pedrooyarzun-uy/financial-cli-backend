@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/dto"
+	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/middlewares"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/services"
 )
 
@@ -13,7 +14,7 @@ func NewBankRoutes(mux *http.ServeMux, s services.BankService) {
 }
 
 func getAllBanks(mux *http.ServeMux, s services.BankService) {
-	mux.HandleFunc("/bank/get-all", func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/bank/get-all", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			ret := s.GetAll()
 
@@ -23,7 +24,6 @@ func getAllBanks(mux *http.ServeMux, s services.BankService) {
 			response.Message = "ok"
 			response.Banks = ret
 			json.NewEncoder(w).Encode(response)
-
 		}
-	})
+	})))
 }
