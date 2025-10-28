@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/dto"
+	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/middlewares"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/services"
 )
 
@@ -13,7 +14,7 @@ func NewAccountRoutes(mux *http.ServeMux, s services.AccountService) {
 }
 
 func create(mux *http.ServeMux, s services.AccountService) {
-	mux.HandleFunc("/account/create", func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/account/create", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			var body dto.CreateReq
 
@@ -45,5 +46,5 @@ func create(mux *http.ServeMux, s services.AccountService) {
 
 			json.NewEncoder(w).Encode(response)
 		}
-	})
+	})))
 }

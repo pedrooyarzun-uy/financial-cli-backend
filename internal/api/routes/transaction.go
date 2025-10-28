@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/dto"
+	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/middlewares"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/services"
 )
 
@@ -13,7 +14,7 @@ func NewTransactionRoutes(mux *http.ServeMux, s services.TransactionService) {
 }
 
 func add(mux *http.ServeMux, s services.TransactionService) {
-	mux.HandleFunc("/transaction/add", func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/transaction/add", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			var body dto.AddTransactionReq
 
@@ -51,5 +52,5 @@ func add(mux *http.ServeMux, s services.TransactionService) {
 			json.NewEncoder(w).Encode(response)
 
 		}
-	})
+	})))
 }
