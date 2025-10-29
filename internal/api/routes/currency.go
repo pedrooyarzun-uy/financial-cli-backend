@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/dto"
+	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/middlewares"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/services"
 )
 
@@ -13,7 +14,7 @@ func NewCurrencyRoutes(mux *http.ServeMux, s services.CurrencyService) {
 }
 
 func getAll(mux *http.ServeMux, s services.CurrencyService) {
-	mux.HandleFunc("/currency/get-all", func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/currency/get-all", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 
 			ret := s.GetAll()
@@ -26,5 +27,5 @@ func getAll(mux *http.ServeMux, s services.CurrencyService) {
 			json.NewEncoder(w).Encode(response)
 
 		}
-	})
+	})))
 }
