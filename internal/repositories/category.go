@@ -20,7 +20,7 @@ func NewCategoryRepository(db *sqlx.DB) CategoryRepository {
 func (r *categoryRepository) GetAll() []domain.Category {
 	categories := []domain.Category{}
 
-	r.db.Select(&categories, "SELECT * FROM category ORDER BY id ASC;")
+	r.db.Select(&categories, "SELECT * FROM category ORDER BY name ASC;")
 
 	return categories
 }
