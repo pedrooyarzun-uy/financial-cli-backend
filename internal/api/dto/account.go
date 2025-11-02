@@ -1,5 +1,7 @@
 package dto
 
+import "github.com/pedrooyarzun-uy/financial-cli-backend/internal/domain"
+
 type CreateReq struct {
 	Name     string  `json:"name" binding:"required"`
 	Number   string  `json:"number" binding:"required"`
@@ -11,4 +13,9 @@ type CreateReq struct {
 
 type DeleteReq struct {
 	Id int `json:"id" binding:"required"`
+}
+
+type GetAllAccountRes struct {
+	Message  string           `json:"message" binding:"required"`
+	Accounts []domain.Account `json:"accounts" binding:"required"`
 }

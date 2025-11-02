@@ -47,4 +47,27 @@ func create(mux *http.ServeMux, s services.AccountService) {
 			json.NewEncoder(w).Encode(response)
 		}
 	})))
+
+	mux.Handle("/account/get-all", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			userIdVal := r.Context().Value(middlewares.UserID)
+
+			var userId int
+
+			if userIdVal != nil {
+				userId = userIdVal.(int)
+			}
+
+			res := s.GetAll(userId)
+
+			response := dto.GetAllAccountRes{
+				Message:  "ok",
+				Accounts: res,
+			}
+
+			w.WriteHeader(200)
+			json.NewEncoder(w).Encode(response)
+
+		}
+	})))
 }

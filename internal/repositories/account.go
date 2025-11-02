@@ -11,6 +11,7 @@ type AccountRepository interface {
 	Create(acc domain.Account) error
 	GetByNumber(number string) domain.Account
 	GetCurrency(acc int) int
+	GetAll(userId int) []domain.Account
 }
 
 type accountRepository struct {
@@ -49,4 +50,12 @@ func (r *accountRepository) GetCurrency(acc int) int {
 	r.db.Get(&cur, "SELECT currency FROM account WHERE id = ?", acc)
 
 	return cur
+}
+
+func (r *accountRepository) GetAll(userId int) []domain.Account {
+	accounts := []domain.Account{}
+
+	r.db.Select(&accounts, "SELECT * FROM account WHERE owner = ?", userId)
+
+	return accounts
 }

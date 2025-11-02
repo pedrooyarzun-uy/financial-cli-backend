@@ -9,6 +9,7 @@ import (
 type AccountService interface {
 	Create(req dto.CreateReq) error
 	Delete(req dto.DeleteReq) error
+	GetAll(userId int) []domain.Account
 }
 
 type accountService struct {
@@ -46,4 +47,8 @@ func (s *accountService) Create(req dto.CreateReq) error {
 
 func (s *accountService) Delete(req dto.DeleteReq) error {
 	return nil
+}
+
+func (s *accountService) GetAll(userId int) []domain.Account {
+	return s.ar.GetAll(userId)
 }
