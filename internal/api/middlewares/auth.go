@@ -1,11 +1,17 @@
 package middlewares
 
 import (
+	"context"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/helpers"
 )
+
+type contextKey string
+
+const UserID contextKey = "userId"
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -41,6 +47,21 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		next.ServeHTTP(w, r)
+		userIdStr, err := claims.GetSubject()
+
+		if err != nil {
+			http.Error(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		// convertir a int
+		userId, err := strconv.Atoi(userIdStr)
+		if err != nil {
+			http.Error(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), UserID, userId)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

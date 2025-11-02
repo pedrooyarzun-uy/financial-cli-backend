@@ -6,7 +6,7 @@ import (
 )
 
 type CategoryService interface {
-	GetAll() []domain.Category
+	GetAll(userId int) []domain.Category
 }
 
 type categoryService struct {
@@ -19,6 +19,6 @@ func NewCategoryService(cr repositories.CategoryRepository) CategoryService {
 	}
 }
 
-func (s *categoryService) GetAll() []domain.Category {
-	return s.cr.GetAll()
+func (s *categoryService) GetAll(userId int) []domain.Category {
+	return s.cr.GetAll(userId)
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type CategoryRepository interface {
-	GetAll() []domain.Category
+	GetAll(userId int) []domain.Category
 }
 
 type categoryRepository struct {
@@ -17,10 +17,10 @@ func NewCategoryRepository(db *sqlx.DB) CategoryRepository {
 	return &categoryRepository{db: db}
 }
 
-func (r *categoryRepository) GetAll() []domain.Category {
+func (r *categoryRepository) GetAll(userId int) []domain.Category {
 	categories := []domain.Category{}
 
-	r.db.Select(&categories, "SELECT * FROM category ORDER BY name ASC;")
+	r.db.Select(&categories, "SELECT * FROM category WHERE user_id = ? OR user_id IS NULL ORDER BY name ASC;", userId)
 
 	return categories
 }
