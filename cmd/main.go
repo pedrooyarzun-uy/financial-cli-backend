@@ -32,6 +32,7 @@ func main() {
 	tr := repositories.NewTransactionRepository(db.DB)
 	cr := repositories.NewCurrencyRepository(db.DB)
 	br := repositories.NewBankRepository(db.DB)
+	catr := repositories.NewCategoryRepository(db.DB)
 
 	//Services
 	us := services.NewUserService(ur)
@@ -39,14 +40,17 @@ func main() {
 	ts := services.NewTransactionRepository(tr, ar)
 	cs := services.NewCurrencyService(cr)
 	bs := services.NewBankService(br)
+	cats := services.NewCategoryService(catr)
 
 	routes.NewUserRoutes(mux, us)
 	routes.NewAccountRoutes(mux, as)
 	routes.NewTransactionRoutes(mux, ts)
 	routes.NewCurrencyRoutes(mux, cs)
 	routes.NewBankRoutes(mux, bs)
+	routes.NewCategoryRoutes(mux, cats)
 
-	fmt.Println("Server is starting...")
+	fmt.Println("Server started at :8080")
+
 	if err := srv.ListenAndServe(); err != nil {
 		panic(err)
 	}
