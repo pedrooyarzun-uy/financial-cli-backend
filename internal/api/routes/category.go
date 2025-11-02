@@ -16,7 +16,16 @@ func NewCategoryRoutes(mux *http.ServeMux, s services.CategoryService) {
 func getAllCategories(mux *http.ServeMux, s services.CategoryService) {
 	mux.Handle("/category/get-all", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			res := s.GetAll()
+
+			userIdVal := r.Context().Value(middlewares.UserID)
+
+			var userId int
+
+			if userIdVal != nil {
+				userId = userIdVal.(int)
+			}
+
+			res := s.GetAll(userId)
 
 			response := dto.GetAllCategoryRes{}
 
