@@ -33,6 +33,7 @@ func main() {
 	cr := repositories.NewCurrencyRepository(db.DB)
 	br := repositories.NewBankRepository(db.DB)
 	catr := repositories.NewCategoryRepository(db.DB)
+	atr := repositories.NewApiTokenRepository(db.DB)
 
 	//Services
 	us := services.NewUserService(ur)
@@ -41,6 +42,7 @@ func main() {
 	cs := services.NewCurrencyService(cr)
 	bs := services.NewBankService(br)
 	cats := services.NewCategoryService(catr)
+	ats := services.NewApiTokenService(atr)
 
 	routes.NewUserRoutes(mux, us)
 	routes.NewAccountRoutes(mux, as)
@@ -48,6 +50,7 @@ func main() {
 	routes.NewCurrencyRoutes(mux, cs)
 	routes.NewBankRoutes(mux, bs)
 	routes.NewCategoryRoutes(mux, cats)
+	routes.NewApiToken(mux, ats)
 
 	fmt.Println("Server started at :8080")
 
