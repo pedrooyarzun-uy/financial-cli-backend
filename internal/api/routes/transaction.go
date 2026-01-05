@@ -12,6 +12,7 @@ import (
 func NewTransactionRoutes(mux *http.ServeMux, s services.TransactionService) {
 	add(mux, s)
 	getTotalsByCategory(mux, s)
+	getCashFlow(mux, s)
 }
 
 func add(mux *http.ServeMux, s services.TransactionService) {
@@ -65,6 +66,19 @@ func getTotalsByCategory(mux *http.ServeMux, s services.TransactionService) {
 			w.WriteHeader(200)
 			response.Message = "ok"
 			response.Totals = s.GetTotalsByCategory()
+			json.NewEncoder(w).Encode(response)
+		}
+	})))
+}
+
+func getCashFlow(mux *http.ServeMux, s services.TransactionService) {
+	mux.Handle("/transaction/get-cash-flow", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			response := dto.GetCashFlowRes{}
+
+			w.WriteHeader(200)
+			response.Message = "ok"
+			response.Cash = s.GetCashFlow()
 			json.NewEncoder(w).Encode(response)
 		}
 	})))

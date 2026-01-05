@@ -19,3 +19,8 @@ type GetTotalsByCategoryRes struct {
 	Message string          `json:"message"`
 	Totals  []CategoryTotal `json:"totals"`
 }
+
+type GetCashFlowRes struct {
+	Message string  `json:"message"`
+	Cash    float64 `json:"cash"`
+}
