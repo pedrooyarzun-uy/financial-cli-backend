@@ -9,6 +9,7 @@ import (
 type TransactionService interface {
 	Add(req dto.AddTransactionReq) error
 	GetTotalsByCategory() []dto.CategoryTotal
+	GetCashFlow() float64
 }
 
 type transactionService struct {
@@ -48,4 +49,8 @@ func (s *transactionService) Add(req dto.AddTransactionReq) error {
 func (s *transactionService) GetTotalsByCategory() []dto.CategoryTotal {
 
 	return s.tr.GetTotalsByCategory()
+}
+
+func (s *transactionService) GetCashFlow() float64 {
+	return s.tr.GetCashFlow()
 }
