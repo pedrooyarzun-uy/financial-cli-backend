@@ -8,7 +8,7 @@ import (
 
 type TransactionRepository interface {
 	Add(transaction domain.Transaction) error
-	GetTotalsByCategory() []dto.CategoryTotal
+	GetTotalsByCategory(userId int) []dto.CategoryTotal
 	GetCashFlow() float64
 }
 
@@ -29,22 +29,19 @@ func (r *transactionRepository) Add(transaction domain.Transaction) error {
 	return err
 }
 
-func (r *transactionRepository) GetTotalsByCategory() []dto.CategoryTotal {
+func (r *transactionRepository) GetTotalsByCategory(userId int) []dto.CategoryTotal {
 	res := []dto.CategoryTotal{}
 
 	r.db.Select(&res, `
 		select 
 			c.name, 
-			SUM(
-				CASE
-					WHEN t.type = 1 THEN t.amount
-					ELSE -t.amount
-				END
-			) AS total
+			SUM(t.amount) AS total
 		from transaction t
 		left join category c on c.id = t.category 
+		join account a on a.id = t.account
+		where a.owner = ? and t.type = 2
 		group by t.category, c.name
-	`)
+	`, userId)
 
 	return res
 }

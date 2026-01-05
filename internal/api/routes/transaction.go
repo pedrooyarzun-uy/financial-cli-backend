@@ -61,11 +61,19 @@ func getTotalsByCategory(mux *http.ServeMux, s services.TransactionService) {
 	mux.Handle("/transaction/get-totals-by-category", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 
+			userIdVal := r.Context().Value(middlewares.UserID)
+
+			var userId int
+
+			if userIdVal != nil {
+				userId = userIdVal.(int)
+			}
+
 			response := dto.GetTotalsByCategoryRes{}
 
 			w.WriteHeader(200)
 			response.Message = "ok"
-			response.Totals = s.GetTotalsByCategory()
+			response.Totals = s.GetTotalsByCategory(userId)
 			json.NewEncoder(w).Encode(response)
 		}
 	})))

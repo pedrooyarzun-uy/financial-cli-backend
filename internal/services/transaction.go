@@ -8,7 +8,7 @@ import (
 
 type TransactionService interface {
 	Add(req dto.AddTransactionReq) error
-	GetTotalsByCategory() []dto.CategoryTotal
+	GetTotalsByCategory(userId int) []dto.CategoryTotal
 	GetCashFlow() float64
 }
 
@@ -46,9 +46,9 @@ func (s *transactionService) Add(req dto.AddTransactionReq) error {
 
 }
 
-func (s *transactionService) GetTotalsByCategory() []dto.CategoryTotal {
+func (s *transactionService) GetTotalsByCategory(userId int) []dto.CategoryTotal {
 
-	return s.tr.GetTotalsByCategory()
+	return s.tr.GetTotalsByCategory(userId)
 }
 
 func (s *transactionService) GetCashFlow() float64 {
