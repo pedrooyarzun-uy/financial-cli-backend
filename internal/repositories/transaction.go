@@ -9,7 +9,7 @@ import (
 type TransactionRepository interface {
 	Add(transaction domain.Transaction) error
 	GetTotalsByCategory(userId int) []dto.CategoryTotal
-	GetCashFlow() float64
+	GetCashFlow(userId int) float64
 }
 
 type transactionRepository struct {
@@ -46,7 +46,7 @@ func (r *transactionRepository) GetTotalsByCategory(userId int) []dto.CategoryTo
 	return res
 }
 
-func (r *transactionRepository) GetCashFlow() float64 {
+func (r *transactionRepository) GetCashFlow(userId int) float64 {
 
 	var cash float64
 
@@ -54,12 +54,14 @@ func (r *transactionRepository) GetCashFlow() float64 {
 		select
 			SUM(
 				CASE 
-					WHEN t.type = 1 THEN t.amount
-					ELSE -t.amount
+					WHEN t.type = 1 THEN -t.amount
+					ELSE t.amount
 				END
 			) AS total
 		from transaction t
-	`)
+		join account a on a.id = t.account
+		where a.owner = ?
+	`, userId)
 
 	return cash
 }

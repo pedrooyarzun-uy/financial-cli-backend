@@ -82,11 +82,20 @@ func getTotalsByCategory(mux *http.ServeMux, s services.TransactionService) {
 func getCashFlow(mux *http.ServeMux, s services.TransactionService) {
 	mux.Handle("/transaction/get-cash-flow", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
+
+			userIdVal := r.Context().Value(middlewares.UserID)
+
+			var userId int
+
+			if userIdVal != nil {
+				userId = userIdVal.(int)
+			}
+
 			response := dto.GetCashFlowRes{}
 
 			w.WriteHeader(200)
 			response.Message = "ok"
-			response.Cash = s.GetCashFlow()
+			response.Cash = s.GetCashFlow(userId)
 			json.NewEncoder(w).Encode(response)
 		}
 	})))
