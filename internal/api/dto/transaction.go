@@ -9,3 +9,13 @@ type AddTransactionReq struct {
 	Subcategory int     `json:"subcategory"`
 	Type        int     `json:"type" binding:"required"`
 }
+
+type CategoryTotal struct {
+	Category string  `db:"name"`
+	Total    float64 `db:"total"`
+}
+
+type GetTotalsByCategoryRes struct {
+	Message string          `json:"message"`
+	Totals  []CategoryTotal `json:"totals"`
+}
