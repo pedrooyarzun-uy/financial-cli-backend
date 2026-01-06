@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/dto"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/domain"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/repositories"
@@ -37,6 +39,8 @@ func (s *transactionService) Add(req dto.AddTransactionReq) error {
 	accountCurrency := s.ar.GetCurrency(req.Account)
 
 	if req.Currency != accountCurrency || accountCurrency == 0 {
+		fmt.Println("Currency de req.Currency: ", req.Currency)
+		fmt.Println("Currency de account: ", accountCurrency)
 		return ErrTransactionNotCorrectCurrency
 	}
 
