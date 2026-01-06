@@ -35,7 +35,8 @@ func (r *transactionRepository) GetTotalsByCategory(userId int) []dto.CategoryTo
 	r.db.Select(&res, `
 		select 
 			c.name, 
-			SUM(t.amount) AS total
+			SUM(t.amount) AS total,
+			c.color
 		from transaction t
 		left join category c on c.id = t.category 
 		join account a on a.id = t.account

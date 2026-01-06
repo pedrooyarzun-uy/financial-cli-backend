@@ -13,6 +13,7 @@ type AddTransactionReq struct {
 type CategoryTotal struct {
 	Category string  `db:"name"`
 	Total    float64 `db:"total"`
+	Color    string  `db:"color"`
 }
 
 type GetTotalsByCategoryRes struct {

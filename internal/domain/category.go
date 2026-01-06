@@ -7,4 +7,5 @@ type Category struct {
 	Name      string    `db:"name"`
 	UserId    *int      `db:"user_id"`
 	CreatedAt time.Time `db:"created_at"`
+	Color     string    `db:"color"`
 }
