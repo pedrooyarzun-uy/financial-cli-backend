@@ -11,7 +11,7 @@ import (
 )
 
 func NewSubcategoryRoutes(mux *http.ServeMux, s services.SubcategoryService) {
-
+	getSubcategoriesByCategory(mux, s)
 }
 
 func getSubcategoriesByCategory(mux *http.ServeMux, s services.SubcategoryService) {
