@@ -6,7 +6,7 @@ import (
 )
 
 type SubcategoryService interface {
-	GetSubcategoriesByCategory(categoryId int) ([]domain.Subcategory, error)
+	GetSubcategoriesByCategory(categoryId int, userId int) ([]domain.Subcategory, error)
 }
 
 type subcategoryService struct {
@@ -19,8 +19,8 @@ func NewSubcategoryService(sr repositories.SubcategoryRepository) SubcategorySer
 	}
 }
 
-func (s *subcategoryService) GetSubcategoriesByCategory(categoryId int) ([]domain.Subcategory, error) {
+func (s *subcategoryService) GetSubcategoriesByCategory(categoryId int, userId int) ([]domain.Subcategory, error) {
 
-	return s.sr.GetSubcategoriesByCategory(categoryId)
+	return s.sr.GetSubcategoriesByCategory(categoryId, userId)
 
 }

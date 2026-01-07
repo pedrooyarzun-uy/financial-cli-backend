@@ -6,7 +6,7 @@ import (
 )
 
 type SubcategoryRepository interface {
-	GetSubcategoriesByCategory(categoryId int) ([]domain.Subcategory, error)
+	GetSubcategoriesByCategory(categoryId int, userId int) ([]domain.Subcategory, error)
 }
 
 type subcategoryRepository struct {
@@ -17,10 +17,13 @@ func NewSubcategoryRepository(db *sqlx.DB) SubcategoryRepository {
 	return &subcategoryRepository{db: db}
 }
 
-func (r *subcategoryRepository) GetSubcategoriesByCategory(categoryId int) ([]domain.Subcategory, error) {
+func (r *subcategoryRepository) GetSubcategoriesByCategory(categoryId int, userId int) ([]domain.Subcategory, error) {
 	var ret []domain.Subcategory
 
-	err := r.db.Select(&ret, "SELECT * FROM subcategory WHERE category_id = ?", categoryId)
+	err := r.db.Select(&ret, `
+		SELECT * 
+		FROM subcategory 
+		WHERE category_id = ? AND (user_id = ? OR user_id IS NULL)`, categoryId, userId)
 
 	return ret, err
 
