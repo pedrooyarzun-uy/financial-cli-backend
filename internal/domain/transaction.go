@@ -1,12 +1,15 @@
 package domain
 
+import "time"
+
 type Transaction struct {
-	Id          int     `db:"id"`
-	Notes       string  `db:"notes"`
-	Amount      float64 `db:"amount"`
-	Account     int     `db:"account"`
-	Currency    int     `db:"currency"`
-	Category    int     `db:"category"`
-	Subcategory int     `db:"subcategory"`
-	Type        int     `db:"type"`
+	Id          int       `db:"id"`
+	Notes       string    `db:"notes"`
+	Amount      float64   `db:"amount"`
+	Account     int       `db:"account"`
+	Currency    int       `db:"currency"`
+	Category    int       `db:"category"`
+	Subcategory int       `db:"subcategory"`
+	Type        int       `db:"type"`
+	CreatedAt   time.Time `db:"created_at"`
 }
