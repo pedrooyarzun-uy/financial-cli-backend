@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -35,13 +34,13 @@ type GetCashFlowRes struct {
 }
 
 type TransactionByDetail struct {
-	Id          int            `db:"id"`
-	Category    sql.NullString `db:"category"`
-	Subcategory sql.NullString `db:"subcategory"`
-	Amount      float64        `db:"amount"`
-	Currency    string         `db:"currency"`
-	Notes       sql.NullString `db:"notes"`
-	Date        time.Time      `db:"created_at"`
+	Id          int       `db:"id"`
+	Category    string    `db:"category"`
+	Subcategory string    `db:"subcategory"`
+	Amount      float64   `db:"amount"`
+	Currency    string    `db:"currency"`
+	Notes       string    `db:"notes"`
+	Date        time.Time `db:"created_at"`
 }
 
 type GetTransactionsByDetailRes struct {
