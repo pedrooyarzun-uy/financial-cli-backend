@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"time"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/dto"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/domain"
@@ -10,6 +12,7 @@ type TransactionRepository interface {
 	Add(transaction domain.Transaction) error
 	GetTotalsByCategory(userId int) []dto.CategoryTotal
 	GetCashFlow(userId int) float64
+	GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int) ([]dto.TransactionByDetail, error)
 }
 
 type transactionRepository struct {
@@ -65,4 +68,66 @@ func (r *transactionRepository) GetCashFlow(userId int) float64 {
 	`, userId)
 
 	return cash
+}
+
+func (r *transactionRepository) GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int) ([]dto.TransactionByDetail, error) {
+
+	var res []dto.TransactionByDetail
+
+	query := `
+		SELECT 
+			t.id, 
+			c.name AS 'category', 
+			s.name AS 'subcategory', 
+			t.amount, 
+			t.notes,
+			t.created_at,
+			cu.symbol AS 'currency'
+		FROM transaction t 
+		LEFT JOIN category c ON c.id = t.category
+		LEFT JOIN subcategory s ON t.subcategory = s.id
+		JOIN account a ON a.id = t.account
+		JOIN currency cu ON cu.id = t.currency
+		WHERE a.owner = ?
+	`
+	args := []any{usrId}
+
+	if category != 0 {
+		query += ` AND t.category = ?`
+		args = append(args, category)
+	}
+
+	if subcategory != 0 {
+		query += ` AND t.subcategory = ?`
+		args = append(args, subcategory)
+	}
+
+	now := time.Now()
+
+	if from.IsZero() || to.IsZero() {
+		start := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+		end := start.AddDate(0, 1, 0)
+
+		query += " AND t.created_at >= ? AND t.created_at < ?"
+		args = append(args, start, end)
+
+	} else {
+		if to.Sub(from) > time.Hour*24*30*6 {
+			start := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+			end := start.AddDate(0, 1, 0)
+
+			query += " AND t.created_at >= ? AND t.created_at < ?"
+			args = append(args, start, end)
+		} else {
+			query += " AND t.created_at BETWEEN ? AND ?"
+			args = append(args, from, to)
+		}
+	}
+
+	query += " ORDER BY t.created_at DESC;"
+
+	err := r.db.Select(&res, query, args...)
+
+	return res, err
+
 }
