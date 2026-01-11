@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/dto"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/domain"
@@ -12,6 +13,7 @@ type TransactionService interface {
 	Add(req dto.AddTransactionReq) error
 	GetTotalsByCategory(userId int) []dto.CategoryTotal
 	GetCashFlow(userId int) float64
+	GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int) ([]dto.TransactionByDetail, error)
 }
 
 type transactionService struct {
@@ -57,4 +59,8 @@ func (s *transactionService) GetTotalsByCategory(userId int) []dto.CategoryTotal
 
 func (s *transactionService) GetCashFlow(userId int) float64 {
 	return s.tr.GetCashFlow(userId)
+}
+
+func (s *transactionService) GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int) ([]dto.TransactionByDetail, error) {
+	return s.tr.GetTransactionsByDetail(usrId, from, to, category, subcategory)
 }
