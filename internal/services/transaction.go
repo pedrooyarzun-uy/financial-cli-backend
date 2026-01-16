@@ -12,7 +12,6 @@ import (
 type TransactionService interface {
 	Add(req dto.AddTransactionReq) error
 	GetTotalsByCategory(userId int) []dto.CategoryTotal
-	GetCashFlow(userId int) float64
 	GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int) ([]dto.TransactionByDetail, error)
 }
 
@@ -61,10 +60,6 @@ func (s *transactionService) Add(req dto.AddTransactionReq) error {
 func (s *transactionService) GetTotalsByCategory(userId int) []dto.CategoryTotal {
 
 	return s.tr.GetTotalsByCategory(userId)
-}
-
-func (s *transactionService) GetCashFlow(userId int) float64 {
-	return s.tr.GetCashFlow(userId)
 }
 
 func (s *transactionService) GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int) ([]dto.TransactionByDetail, error) {

@@ -11,7 +11,6 @@ import (
 type TransactionRepository interface {
 	Add(transaction domain.Transaction) error
 	GetTotalsByCategory(userId int) []dto.CategoryTotal
-	GetCashFlow(userId int) float64
 	GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int) ([]dto.TransactionByDetail, error)
 }
 
@@ -48,26 +47,6 @@ func (r *transactionRepository) GetTotalsByCategory(userId int) []dto.CategoryTo
 	`, userId)
 
 	return res
-}
-
-func (r *transactionRepository) GetCashFlow(userId int) float64 {
-
-	var cash float64
-
-	r.db.Get(&cash, `
-		select
-			SUM(
-				CASE 
-					WHEN t.type = 1 THEN -t.amount
-					ELSE t.amount
-				END
-			) AS total
-		from transaction t
-		join account a on a.id = t.account
-		where a.owner = ?
-	`, userId)
-
-	return cash
 }
 
 func (r *transactionRepository) GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int) ([]dto.TransactionByDetail, error) {
