@@ -82,7 +82,8 @@ func (r *transactionRepository) GetTransactionsByDetail(usrId int, from time.Tim
 			t.amount, 
 			COALESCE(t.notes, 'N/A') AS 'notes',
 			t.created_at,
-			cu.symbol AS 'currency'
+			cu.symbol AS 'currency',
+			c.color
 		FROM transaction t 
 		LEFT JOIN category c ON c.id = t.category
 		LEFT JOIN subcategory s ON t.subcategory = s.id

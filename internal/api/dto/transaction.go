@@ -41,6 +41,7 @@ type TransactionByDetail struct {
 	Currency    string    `db:"currency"`
 	Notes       string    `db:"notes"`
 	Date        time.Time `db:"created_at"`
+	Color       string    `db:"color"`
 }
 
 type GetTransactionsByDetailRes struct {
