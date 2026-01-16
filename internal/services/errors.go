@@ -16,4 +16,5 @@ var (
 
 	//Transaction errors
 	ErrTransactionNotCorrectCurrency = errors.New("this account not accepts this type of currency")
+	ErrCantUpdateBalance             = errors.New("can't update cash balance of account")
 )

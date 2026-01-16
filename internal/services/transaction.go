@@ -40,13 +40,19 @@ func (s *transactionService) Add(req dto.AddTransactionReq) error {
 
 	accountCurrency := s.ar.GetCurrency(req.Account)
 
+	err := s.ar.UpdateCashBalance(transaction.Account, transaction.Amount, transaction.Type)
+
+	if err != nil {
+		return ErrCantUpdateBalance
+	}
+
 	if req.Currency != accountCurrency || accountCurrency == 0 {
 		fmt.Println("Currency de req.Currency: ", req.Currency)
 		fmt.Println("Currency de account: ", accountCurrency)
 		return ErrTransactionNotCorrectCurrency
 	}
 
-	err := s.tr.Add(transaction)
+	err = s.tr.Add(transaction)
 
 	return err
 
