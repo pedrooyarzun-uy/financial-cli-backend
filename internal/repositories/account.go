@@ -12,6 +12,7 @@ type AccountRepository interface {
 	GetByNumber(number string) domain.Account
 	GetCurrency(acc int) int
 	GetAll(userId int) []domain.Account
+	UpdateCashBalance(acc int, amount float64, transType int) error
 }
 
 type accountRepository struct {
@@ -58,4 +59,16 @@ func (r *accountRepository) GetAll(userId int) []domain.Account {
 	r.db.Select(&accounts, "SELECT * FROM account WHERE owner = ?", userId)
 
 	return accounts
+}
+
+func (r *accountRepository) UpdateCashBalance(acc int, amount float64, transType int) error {
+
+	var err error
+	if transType == 1 {
+		_, err = r.db.Exec(`UPDATE account SET balance = balance + ? WHERE id = ?`, amount, acc)
+	} else {
+		_, err = r.db.Exec(`UPDATE account SET balance = balance - ? WHERE id = ?`, amount, acc)
+	}
+
+	return err
 }

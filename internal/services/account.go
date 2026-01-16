@@ -12,6 +12,7 @@ type AccountService interface {
 	Create(req dto.CreateReq) error
 	Delete(req dto.DeleteReq) error
 	GetAll(userId int) []domain.Account
+	UpdateCashBalance(acc int, amount float64, transType int) error
 }
 
 type accountService struct {
@@ -53,4 +54,8 @@ func (s *accountService) Delete(req dto.DeleteReq) error {
 
 func (s *accountService) GetAll(userId int) []domain.Account {
 	return s.ar.GetAll(userId)
+}
+
+func (s *accountService) UpdateCashBalance(acc int, amount float64, transType int) error {
+	return s.ar.UpdateCashBalance(acc, amount, transType)
 }
