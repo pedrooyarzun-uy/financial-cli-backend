@@ -13,6 +13,7 @@ type AccountRepository interface {
 	GetCurrency(acc int) int
 	GetAll(userId int) []domain.Account
 	UpdateCashBalance(acc int, amount float64, transType int) error
+	GetCashBalance(acc int) float64
 }
 
 type accountRepository struct {
@@ -71,4 +72,15 @@ func (r *accountRepository) UpdateCashBalance(acc int, amount float64, transType
 	}
 
 	return err
+}
+
+func (r *accountRepository) GetCashBalance(acc int) float64 {
+	var balance float64
+	err := r.db.Get(&balance, "SELECT balance FROM account WHERE id = ?", acc)
+
+	if err != nil {
+		return 0
+	}
+
+	return balance
 }

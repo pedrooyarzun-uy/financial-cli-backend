@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/dto"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/middlewares"
@@ -11,6 +12,7 @@ import (
 
 func NewAccountRoutes(mux *http.ServeMux, s services.AccountService) {
 	create(mux, s)
+	getCashBalance(mux, s)
 }
 
 func create(mux *http.ServeMux, s services.AccountService) {
@@ -69,5 +71,28 @@ func create(mux *http.ServeMux, s services.AccountService) {
 			json.NewEncoder(w).Encode(response)
 
 		}
+	})))
+}
+
+func getCashBalance(mux *http.ServeMux, s services.AccountService) {
+	mux.Handle("/account/get-by-id", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			rawId := r.URL.Query().Get("id")
+
+			id, _ := strconv.Atoi(rawId)
+			cash := s.GetCashBalance(id)
+
+			response := dto.GetCashBalanceRes{
+				Message: "ok",
+				Cash:    cash,
+			}
+
+			w.WriteHeader(200)
+			response.Message = "ok"
+			response.Cash = cash
+
+			json.NewEncoder(w).Encode(response)
+		}
+
 	})))
 }

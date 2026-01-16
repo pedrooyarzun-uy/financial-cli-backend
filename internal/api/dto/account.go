@@ -19,3 +19,8 @@ type GetAllAccountRes struct {
 	Message  string           `json:"message" binding:"required"`
 	Accounts []domain.Account `json:"accounts" binding:"required"`
 }
+
+type GetCashBalanceRes struct {
+	Message string  `json:"message" binding:"required"`
+	Cash    float64 `json:"cash" binding:"required"`
+}
