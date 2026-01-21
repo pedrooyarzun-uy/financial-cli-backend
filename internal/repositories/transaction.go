@@ -12,7 +12,7 @@ type TransactionRepository interface {
 	Add(transaction domain.Transaction) error
 	GetTotalsByCategory(userId int) []dto.CategoryTotal
 	GetCashFlow(userId int) float64
-	GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int, page int, limit int) ([]dto.TransactionByDetail, error)
+	GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int, page int, limit int) ([]dto.TransactionByDetail, int, error)
 }
 
 type transactionRepository struct {
@@ -70,7 +70,7 @@ func (r *transactionRepository) GetCashFlow(userId int) float64 {
 	return cash
 }
 
-func (r *transactionRepository) GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int, page int, limit int) ([]dto.TransactionByDetail, error) {
+func (r *transactionRepository) GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int, page int, limit int) ([]dto.TransactionByDetail, int, error) {
 
 	var res []dto.TransactionByDetail
 
@@ -127,13 +127,20 @@ func (r *transactionRepository) GetTransactionsByDetail(usrId int, from time.Tim
 
 	query += " ORDER BY t.created_at DESC"
 
+	results := []dto.TransactionByDetail{}
+	err := r.db.Select(&results, query, args...)
+
+	//Get for adding
+	totalResults := len(results)
+	maxPage := (totalResults + limit - 1) / limit
+
 	//Pagination
 	offset := (page - 1) * limit
 	query += " LIMIT ? OFFSET ?;"
 	args = append(args, limit, offset)
 
-	err := r.db.Select(&res, query, args...)
+	err = r.db.Select(&res, query, args...)
 
-	return res, err
+	return res, maxPage, err
 
 }

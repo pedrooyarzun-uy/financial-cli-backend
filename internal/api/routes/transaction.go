@@ -136,7 +136,7 @@ func getTransactionsByDetail(mux *http.ServeMux, s services.TransactionService) 
 			page, _ := strconv.Atoi(pageRaw)
 			limit, _ := strconv.Atoi(limitRaw)
 
-			transactions, err := s.GetTransactionsByDetail(userId, from, to, category, subcategory, page, limit)
+			transactions, totalPages, err := s.GetTransactionsByDetail(userId, from, to, category, subcategory, page, limit)
 
 			response := dto.GetTransactionsByDetailRes{}
 
@@ -144,10 +144,12 @@ func getTransactionsByDetail(mux *http.ServeMux, s services.TransactionService) 
 				w.WriteHeader(400)
 				response.Message = err.Error()
 				response.Transactions = []dto.TransactionByDetail{}
+				response.TotalPages = 0
 			} else {
 				w.WriteHeader(200)
 				response.Message = "ok"
 				response.Transactions = transactions
+				response.TotalPages = totalPages
 			}
 
 			json.NewEncoder(w).Encode(response)
