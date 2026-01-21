@@ -133,8 +133,15 @@ func getTransactionsByDetail(mux *http.ServeMux, s services.TransactionService) 
 			pageRaw := r.URL.Query().Get("page")
 			limitRaw := r.URL.Query().Get("limit")
 
-			page, _ := strconv.Atoi(pageRaw)
-			limit, _ := strconv.Atoi(limitRaw)
+			page, err := strconv.Atoi(pageRaw)
+			limit, err := strconv.Atoi(limitRaw)
+
+			//If problems while getting limit and page, return bad request
+			if err != nil {
+				w.WriteHeader(400)
+				w.Write([]byte("Bad request"))
+				return
+			}
 
 			transactions, totalPages, err := s.GetTransactionsByDetail(userId, from, to, category, subcategory, page, limit)
 
