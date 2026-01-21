@@ -127,11 +127,16 @@ func getTransactionsByDetail(mux *http.ServeMux, s services.TransactionService) 
 			// Get category and subcategory
 			rawCategory := r.URL.Query().Get("category")
 			rawSubcategory := r.URL.Query().Get("subcategory")
-
 			category, _ := strconv.Atoi(rawCategory)
 			subcategory, _ := strconv.Atoi(rawSubcategory)
 
-			transactions, err := s.GetTransactionsByDetail(userId, from, to, category, subcategory)
+			pageRaw := r.URL.Query().Get("page")
+			limitRaw := r.URL.Query().Get("limit")
+
+			page, _ := strconv.Atoi(pageRaw)
+			limit, _ := strconv.Atoi(limitRaw)
+
+			transactions, err := s.GetTransactionsByDetail(userId, from, to, category, subcategory, page, limit)
 
 			response := dto.GetTransactionsByDetailRes{}
 
