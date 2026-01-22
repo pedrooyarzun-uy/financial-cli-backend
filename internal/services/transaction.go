@@ -12,7 +12,7 @@ import (
 type TransactionService interface {
 	Add(req dto.AddTransactionReq) error
 	GetTotalsByCategory(userId int) []dto.CategoryTotal
-	GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int) ([]dto.TransactionByDetail, error)
+	GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int, page int, limit int) ([]dto.TransactionByDetail, int, error)
 }
 
 type transactionService struct {
@@ -62,6 +62,6 @@ func (s *transactionService) GetTotalsByCategory(userId int) []dto.CategoryTotal
 	return s.tr.GetTotalsByCategory(userId)
 }
 
-func (s *transactionService) GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int) ([]dto.TransactionByDetail, error) {
-	return s.tr.GetTransactionsByDetail(usrId, from, to, category, subcategory)
+func (s *transactionService) GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int, page int, limit int) ([]dto.TransactionByDetail, int, error) {
+	return s.tr.GetTransactionsByDetail(usrId, from, to, category, subcategory, page, limit)
 }

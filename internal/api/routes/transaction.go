@@ -104,11 +104,23 @@ func getTransactionsByDetail(mux *http.ServeMux, s services.TransactionService) 
 			// Get category and subcategory
 			rawCategory := r.URL.Query().Get("category")
 			rawSubcategory := r.URL.Query().Get("subcategory")
-
 			category, _ := strconv.Atoi(rawCategory)
 			subcategory, _ := strconv.Atoi(rawSubcategory)
 
-			transactions, err := s.GetTransactionsByDetail(userId, from, to, category, subcategory)
+			pageRaw := r.URL.Query().Get("page")
+			limitRaw := r.URL.Query().Get("limit")
+
+			page, err := strconv.Atoi(pageRaw)
+			limit, err := strconv.Atoi(limitRaw)
+
+			//If problems while getting limit and page, return bad request
+			if err != nil {
+				w.WriteHeader(400)
+				w.Write([]byte("Bad request"))
+				return
+			}
+
+			transactions, totalPages, err := s.GetTransactionsByDetail(userId, from, to, category, subcategory, page, limit)
 
 			response := dto.GetTransactionsByDetailRes{}
 
@@ -116,10 +128,12 @@ func getTransactionsByDetail(mux *http.ServeMux, s services.TransactionService) 
 				w.WriteHeader(400)
 				response.Message = err.Error()
 				response.Transactions = []dto.TransactionByDetail{}
+				response.TotalPages = 0
 			} else {
 				w.WriteHeader(200)
 				response.Message = "ok"
 				response.Transactions = transactions
+				response.TotalPages = totalPages
 			}
 
 			json.NewEncoder(w).Encode(response)
