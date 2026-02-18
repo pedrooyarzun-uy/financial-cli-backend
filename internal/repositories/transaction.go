@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -11,7 +10,7 @@ import (
 
 type TransactionRepository interface {
 	Add(transaction domain.Transaction) error
-	GetTotalsByCategory(userId int, from time.Time, to time.Time, category int) []dto.CategoryTotal
+	GetTotalsByCategory(userId int, from time.Time, to time.Time, category int) ([]dto.CategoryTotal, error)
 	GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int, page int, limit int) ([]dto.TransactionByDetail, int, error)
 }
 
@@ -32,7 +31,7 @@ func (r *transactionRepository) Add(transaction domain.Transaction) error {
 	return err
 }
 
-func (r *transactionRepository) GetTotalsByCategory(userId int, from time.Time, to time.Time, category int) []dto.CategoryTotal {
+func (r *transactionRepository) GetTotalsByCategory(userId int, from time.Time, to time.Time, category int) ([]dto.CategoryTotal, error) {
 
 	query := ""
 
@@ -92,10 +91,10 @@ func (r *transactionRepository) GetTotalsByCategory(userId int, from time.Time, 
 	err := r.db.Select(&res, query, args...)
 
 	if err != nil {
-		fmt.Println("Esto no anda pa", err)
+		return nil, err
 	}
 
-	return res
+	return res, nil
 }
 
 func (r *transactionRepository) GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int, page int, limit int) ([]dto.TransactionByDetail, int, error) {
