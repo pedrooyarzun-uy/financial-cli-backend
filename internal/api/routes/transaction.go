@@ -71,11 +71,21 @@ func getTotalsByCategory(mux *http.ServeMux, s services.TransactionService) {
 				userId = userIdVal.(int)
 			}
 
+			rawFrom := r.URL.Query().Get("from")
+			rawTo := r.URL.Query().Get("to")
+
+			from, _ := time.Parse("2006-01-02", rawFrom)
+			to, _ := time.Parse("2006-01-02", rawTo)
+
+			// Get category and subcategory
+			rawCategory := r.URL.Query().Get("category")
+			category, _ := strconv.Atoi(rawCategory)
+
 			response := dto.GetTotalsByCategoryRes{}
 
 			w.WriteHeader(200)
 			response.Message = "ok"
-			response.Totals = s.GetTotalsByCategory(userId)
+			response.Totals = s.GetTotalsByCategory(userId, from, to, category)
 			json.NewEncoder(w).Encode(response)
 		}
 	})))

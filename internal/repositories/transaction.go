@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -10,7 +11,7 @@ import (
 
 type TransactionRepository interface {
 	Add(transaction domain.Transaction) error
-	GetTotalsByCategory(userId int) []dto.CategoryTotal
+	GetTotalsByCategory(userId int, from time.Time, to time.Time, category int) []dto.CategoryTotal
 	GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int, page int, limit int) ([]dto.TransactionByDetail, int, error)
 }
 
@@ -31,20 +32,68 @@ func (r *transactionRepository) Add(transaction domain.Transaction) error {
 	return err
 }
 
-func (r *transactionRepository) GetTotalsByCategory(userId int) []dto.CategoryTotal {
+func (r *transactionRepository) GetTotalsByCategory(userId int, from time.Time, to time.Time, category int) []dto.CategoryTotal {
+
+	query := ""
+
+	if category != 0 {
+		query += `SELECT s.name, `
+	} else {
+		query += `SELECT c.name, `
+	}
+
+	query += `SUM(t.amount) AS total, c.color
+		FROM transaction t
+		LEFT JOIN category c ON c.id = t.category 
+		LEFT JOIN subcategory s ON s.id = t.subcategory
+		JOIN account a ON a.id = t.account
+		WHERE a.owner = ? 
+	`
+
+	args := []any{userId}
+
+	if category != 0 {
+		query += ` AND t.category = ?`
+		args = append(args, category)
+	}
+
+	now := time.Now()
+
+	if from.IsZero() || to.IsZero() {
+		start := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+		end := start.AddDate(0, 1, 0)
+
+		query += " AND t.created_at >= ? AND t.created_at < ?"
+		args = append(args, start, end)
+
+	} else {
+		if to.Sub(from) > time.Hour*24*30*6 {
+			start := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+			end := start.AddDate(0, 1, 0)
+
+			query += " AND t.created_at >= ? AND t.created_at < ?"
+			args = append(args, start, end)
+		} else {
+			query += " AND t.created_at BETWEEN ? AND ?"
+			args = append(args, from, to)
+		}
+	}
+
+	query += " AND t.type = 2"
+
+	if category != 0 {
+		query += " GROUP BY t.subcategory, s.name, c.color"
+	} else {
+		query += " GROUP BY t.category, c.name, c.color"
+	}
+
 	res := []dto.CategoryTotal{}
 
-	r.db.Select(&res, `
-		select 
-			c.name, 
-			SUM(t.amount) AS total,
-			c.color
-		from transaction t
-		left join category c on c.id = t.category 
-		join account a on a.id = t.account
-		where a.owner = ? and t.type = 2
-		group by t.category, c.name
-	`, userId)
+	err := r.db.Select(&res, query, args...)
+
+	if err != nil {
+		fmt.Println("Esto no anda pa", err)
+	}
 
 	return res
 }
