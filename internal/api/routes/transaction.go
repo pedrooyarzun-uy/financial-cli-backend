@@ -20,6 +20,15 @@ func NewTransactionRoutes(mux *http.ServeMux, s services.TransactionService) {
 func add(mux *http.ServeMux, s services.TransactionService) {
 	mux.Handle("/transaction/add", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
+
+			userIdVal := r.Context().Value(middlewares.UserID)
+
+			var userId int
+
+			if userIdVal != nil {
+				userId = userIdVal.(int)
+			}
+
 			var body dto.AddTransactionReq
 
 			err := json.NewDecoder(r.Body).Decode(&body)
@@ -36,7 +45,7 @@ func add(mux *http.ServeMux, s services.TransactionService) {
 				return
 			}
 
-			err = s.Add(body)
+			err = s.Add(body, userId)
 
 			response := dto.GenericRes{}
 
