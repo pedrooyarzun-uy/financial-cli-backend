@@ -26,7 +26,7 @@ func (r *transactionRepository) Add(transaction domain.Transaction) error {
 	_, err := r.db.NamedExec(`
 		INSERT INTO transaction (notes, amount, account, currency, category, subcategory, type)
 		VALUES
-		(:notes, :amount, :account, :currency, :category, :subcategory, :type)`, transaction)
+		(:notes, :amount, :account, :currency, NULLIF(:category, 0), NULLIF(:subcategory, 0), :type)`, transaction)
 
 	return err
 }
