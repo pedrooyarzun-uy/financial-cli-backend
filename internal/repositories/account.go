@@ -14,6 +14,7 @@ type AccountRepository interface {
 	GetAll(userId int) []domain.Account
 	UpdateCashBalance(acc int, amount float64, transType int) error
 	GetCashBalance(acc int) float64
+	BelongsToUser(accountID int, userID int) (bool, error)
 }
 
 type accountRepository struct {
@@ -83,4 +84,20 @@ func (r *accountRepository) GetCashBalance(acc int) float64 {
 	}
 
 	return balance
+}
+
+func (r *accountRepository) BelongsToUser(accountID int, userID int) (bool, error) {
+	var exists bool
+
+	err := r.db.Get(&exists, `SELECT EXISTS (
+		SELECT 1 
+		FROM account 
+		WHERE id = ? AND owner = ?
+	)`, accountID, userID)
+
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
 }
