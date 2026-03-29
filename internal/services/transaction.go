@@ -49,6 +49,10 @@ func (s *transactionService) Add(req dto.AddTransactionReq, userID int) error {
 		return errors.New("Transaction type must be 'Income', 'Outcome' or 'Adjustment'")
 	}
 
+	if transaction.Type != 3 && transaction.Category == 0 {
+		return errors.New("Category can't be empty")
+	}
+
 	//---Init check belong account---
 	belongsAccount, err := s.ar.BelongsToUser(transaction.Account, userID)
 
