@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/dto"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/domain"
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/repositories"
@@ -45,7 +43,7 @@ func (s *accountService) Create(req dto.CreateReq) error {
 	}
 
 	err := s.ar.Create(acc)
-	fmt.Println(err)
+
 	return err
 }
 
