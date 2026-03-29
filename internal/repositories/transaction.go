@@ -104,8 +104,8 @@ func (r *transactionRepository) GetTransactionsByDetail(usrId int, from time.Tim
 	query := `
 		SELECT 
 			t.id, 
-			COALESCE(c.name, 'N/A') AS 'category', 
-			COALESCE(s.name, 'N/A') AS 'subcategory', 
+			COALESCE(c.name, IF(t.type = 3, 'Adjustment', 'N/A')) AS 'category', 
+			COALESCE(s.name, IF(t.type = 3, 'Adjustment', 'N/A')) AS 'subcategory', 
 			t.amount, 
 			COALESCE(t.notes, 'N/A') AS 'notes',
 			t.created_at,
