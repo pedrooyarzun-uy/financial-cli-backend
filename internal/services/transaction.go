@@ -1,7 +1,7 @@
 package services
 
 import (
-	"fmt"
+	"errors"
 	"time"
 
 	"github.com/pedrooyarzun-uy/financial-cli-backend/internal/api/dto"
@@ -10,7 +10,7 @@ import (
 )
 
 type TransactionService interface {
-	Add(req dto.AddTransactionReq) error
+	Add(req dto.AddTransactionReq, userID int) error
 	GetTotalsByCategory(userId int, from time.Time, to time.Time, category int) ([]dto.CategoryTotal, error)
 	GetTransactionsByDetail(usrId int, from time.Time, to time.Time, category int, subcategory int, page int, limit int) ([]dto.TransactionByDetail, int, error)
 }
@@ -26,7 +26,7 @@ func NewTransactionRepository(tr repositories.TransactionRepository, ar reposito
 	}
 }
 
-func (s *transactionService) Add(req dto.AddTransactionReq) error {
+func (s *transactionService) Add(req dto.AddTransactionReq, userID int) error {
 	transaction := domain.Transaction{
 		Notes:       req.Notes,
 		Amount:      req.Amount,
@@ -39,15 +39,37 @@ func (s *transactionService) Add(req dto.AddTransactionReq) error {
 
 	accountCurrency := s.ar.GetCurrency(req.Account)
 
-	err := s.ar.UpdateCashBalance(transaction.Account, transaction.Amount, transaction.Type)
+	//TODO: Logic for currency convertion.
+	if transaction.Currency != accountCurrency || accountCurrency == 0 {
+		return errors.New("Transaction currency is not the same as account currency")
+
+	}
+
+	if transaction.Type != 1 && transaction.Type != 2 && transaction.Type != 3 {
+		return errors.New("Transaction type must be 'Income', 'Outcome' or 'Adjustment'")
+	}
+
+	//---Init check belong account---
+	belongsAccount, err := s.ar.BelongsToUser(transaction.Account, userID)
+
+	if err != nil {
+		return errors.New("Something went wrong")
+	}
+
+	if !belongsAccount {
+		return errors.New("The selected account not belongs to you")
+	}
+	//---End check account---
+
+	//--Init update cash balance---
+	err = s.ar.UpdateCashBalance(transaction.Account, transaction.Amount, transaction.Type)
 
 	if err != nil {
 		return ErrCantUpdateBalance
 	}
+	//---End update cash balance---
 
 	if req.Currency != accountCurrency || accountCurrency == 0 {
-		fmt.Println("Currency de req.Currency: ", req.Currency)
-		fmt.Println("Currency de account: ", accountCurrency)
 		return ErrTransactionNotCorrectCurrency
 	}
 
