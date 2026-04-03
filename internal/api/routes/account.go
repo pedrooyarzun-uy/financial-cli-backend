@@ -18,6 +18,14 @@ func NewAccountRoutes(mux *http.ServeMux, s services.AccountService) {
 func create(mux *http.ServeMux, s services.AccountService) {
 	mux.Handle("/account/create", middlewares.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
+			userIdVal := r.Context().Value(middlewares.UserID)
+
+			var userId int
+
+			if userIdVal != nil {
+				userId = userIdVal.(int)
+			}
+
 			var body dto.CreateReq
 
 			err := json.NewDecoder(r.Body).Decode(&body)
@@ -27,6 +35,8 @@ func create(mux *http.ServeMux, s services.AccountService) {
 				w.Write([]byte("Bad request"))
 				return
 			}
+
+			body.Owner = userId
 
 			err = s.Create(body)
 
