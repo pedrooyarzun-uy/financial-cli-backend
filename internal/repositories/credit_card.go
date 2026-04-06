@@ -19,9 +19,9 @@ func NewCreditCard(db *sqlx.DB) CreditCardRepository {
 
 func (r *creditCardRepository) Add(creditCard domain.CreditCard) error {
 	_, err := r.db.NamedExec(`
-		INSERT INTO credit_card (name, bankID, currencyID, ownerID, close_day, due_day, limit)
+		INSERT INTO credit_card (name, bankID, ownerID, close_day, due_day, limit)
 		VALUES
-		(:name, :bankID, :currencyID, :ownerID, :close_day, :due_day, :limit)`, creditCard)
+		(:name, :bankID, :ownerID, :close_day, :due_day, :limit)`, creditCard)
 
 	return err
 }
