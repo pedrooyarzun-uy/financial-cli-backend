@@ -35,6 +35,7 @@ func main() {
 	catr := repositories.NewCategoryRepository(db.DB)
 	atr := repositories.NewApiTokenRepository(db.DB)
 	sr := repositories.NewSubcategoryRepository(db.DB)
+	ccr := repositories.NewCreditCard(db.DB)
 
 	//Services
 	us := services.NewUserService(ur)
@@ -45,6 +46,7 @@ func main() {
 	cats := services.NewCategoryService(catr)
 	ats := services.NewApiTokenService(atr)
 	ss := services.NewSubcategoryService(sr)
+	ccs := services.NewCreditCardService(ccr)
 
 	routes.NewUserRoutes(mux, us)
 	routes.NewAccountRoutes(mux, as)
@@ -54,6 +56,7 @@ func main() {
 	routes.NewCategoryRoutes(mux, cats)
 	routes.NewApiToken(mux, ats)
 	routes.NewSubcategoryRoutes(mux, ss)
+	routes.NewCreditCardRoutes(mux, ccs)
 
 	fmt.Println("Server started at :8080")
 
