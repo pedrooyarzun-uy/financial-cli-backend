@@ -12,9 +12,9 @@ type AccountRepository interface {
 	GetByNumber(number string) domain.Account
 	GetCurrency(acc int) int
 	GetAll(userId int) []domain.Account
-	UpdateCashBalance(acc int, amount float64, transType int) error
+	UpdateCashBalance(acc int, amount float64, transType domain.TransactionKind) error
 	GetCashBalance(acc int) float64
-	BelongsToUser(accountID int, userID int) (bool, error)
+	BelongsToUser(accountID int, userID int) bool
 }
 
 type accountRepository struct {
@@ -63,10 +63,10 @@ func (r *accountRepository) GetAll(userId int) []domain.Account {
 	return accounts
 }
 
-func (r *accountRepository) UpdateCashBalance(acc int, amount float64, transType int) error {
+func (r *accountRepository) UpdateCashBalance(acc int, amount float64, transType domain.TransactionKind) error {
 
 	var err error
-	if transType == 1 {
+	if transType == "income" {
 		_, err = r.db.Exec(`UPDATE account SET balance = balance + ? WHERE id = ?`, amount, acc)
 	} else {
 		_, err = r.db.Exec(`UPDATE account SET balance = balance - ? WHERE id = ?`, amount, acc)
@@ -86,7 +86,7 @@ func (r *accountRepository) GetCashBalance(acc int) float64 {
 	return balance
 }
 
-func (r *accountRepository) BelongsToUser(accountID int, userID int) (bool, error) {
+func (r *accountRepository) BelongsToUser(accountID int, userID int) bool {
 	var exists bool
 
 	err := r.db.Get(&exists, `SELECT EXISTS (
@@ -96,8 +96,8 @@ func (r *accountRepository) BelongsToUser(accountID int, userID int) (bool, erro
 	)`, accountID, userID)
 
 	if err != nil {
-		return false, err
+		return false
 	}
 
-	return exists, nil
+	return exists
 }

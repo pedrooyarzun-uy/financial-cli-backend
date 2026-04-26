@@ -31,7 +31,7 @@ func (r *creditCardRepository) Add(creditCard domain.CreditCard) error {
 func (r *creditCardRepository) GetCurrency(creditCardId int) int {
 	var currency int
 
-	r.db.Get(&currency, "SELECT currency_id FROM credit_card WHERE ownerID = ?", creditCardId)
+	r.db.Get(&currency, "SELECT currency_id FROM credit_card WHERE id = ?", creditCardId)
 
 	return currency
 }
