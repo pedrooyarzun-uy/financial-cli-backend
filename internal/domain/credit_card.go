@@ -9,6 +9,7 @@ type CreditCard struct {
 	OwnerID     int       `db:"ownerID"`
 	CloseDay    int       `db:"close_day"`
 	DueDay      int       `db:"due_day"`
+	CurrencyId  int       `db:"currency_id"`
 	CreditLimit float64   `db:"credit_limit"`
 	CreatedAt   time.Time `db:"created_at"`
 }
