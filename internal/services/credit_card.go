@@ -41,6 +41,10 @@ func (s *creditCardService) Add(req dto.AddCreditCardReq) error {
 		return errors.New("Limit can't be empty")
 	}
 
+	if req.CurrencyId == 0 {
+		return errors.New("Currency can't be empty")
+	}
+
 	creditCard := domain.CreditCard{
 		Name:        req.Name,
 		BankID:      req.BankID,
@@ -48,6 +52,7 @@ func (s *creditCardService) Add(req dto.AddCreditCardReq) error {
 		DueDay:      req.DueDay,
 		CreditLimit: req.CreditLimit,
 		OwnerID:     req.OwnerID,
+		CurrencyId:  req.CurrencyId,
 	}
 
 	err := s.ccr.Add(creditCard)

@@ -16,71 +16,74 @@ type TransactionService interface {
 }
 
 type transactionService struct {
-	tr repositories.TransactionRepository
-	ar repositories.AccountRepository
+	tr  repositories.TransactionRepository
+	ar  repositories.AccountRepository
+	ccr repositories.CreditCardRepository
 }
 
-func NewTransactionRepository(tr repositories.TransactionRepository, ar repositories.AccountRepository) TransactionService {
+func NewTransactionRepository(tr repositories.TransactionRepository, ar repositories.AccountRepository, ccr repositories.CreditCardRepository) TransactionService {
 	return &transactionService{
-		tr, ar,
+		tr, ar, ccr,
 	}
 }
 
 func (s *transactionService) Add(req dto.AddTransactionReq, userID int) error {
 	transaction := domain.Transaction{
-		Notes:       req.Notes,
-		Amount:      req.Amount,
-		Account:     req.Account,
-		Currency:    req.Currency,
-		Category:    req.Category,
-		Subcategory: req.Subcategory,
-		Type:        req.Type,
+		Notes:         req.Notes,
+		Amount:        req.Amount,
+		Kind:          domain.TransactionKind(req.Kind),
+		PaymentMethod: domain.PaymentMethod(req.PaymentMethod),
+		CurrencyId:    req.CurrencyId,
+		CategoryId:    req.CategoryId,
+		SubcategoryId: req.SubcategoryId,
+		AccountId:     req.AccountId,
+		CreditCardId:  req.CreditCardId,
 	}
 
-	accountCurrency := s.ar.GetCurrency(req.Account)
+	if req.AccountId == 0 && req.CreditCardId == 0 {
+		return errors.New("You must select an account or a credit card")
+	}
+
+	if req.AccountId != 0 && req.CreditCardId != 0 {
+		return errors.New("You can only select or an account or a credit card")
+	}
+
+	var currency int
+	var belongs bool
+
+	if req.AccountId != 0 {
+		currency = s.ar.GetCurrency(req.AccountId)
+		belongs = s.ar.BelongsToUser(transaction.AccountId, userID)
+	} else {
+		currency = s.ccr.GetCurrency(req.CreditCardId)
+		belongs = s.ccr.BelongsToUser(req.CreditCardId, userID)
+	}
 
 	//TODO: Logic for currency convertion.
-	if transaction.Currency != accountCurrency || accountCurrency == 0 {
+	if transaction.CurrencyId != currency || currency == 0 {
 		return errors.New("Transaction currency is not the same as account currency")
-
 	}
 
-	if transaction.Type != 1 && transaction.Type != 2 && transaction.Type != 3 {
+	if !belongs {
+		return errors.New("The selected account not belongs to you")
+	}
+
+	if transaction.Kind != domain.TransactionKindExpense && transaction.Kind != domain.TransactionKindIncome {
 		return errors.New("Transaction type must be 'Income', 'Outcome' or 'Adjustment'")
 	}
 
-	if transaction.Type != 3 && transaction.Category == 0 {
-		return errors.New("Category can't be empty")
-	}
+	//TODO: Strategy pattern for solving cash balance between credit_cards and transactions
+	if req.AccountId != 0 {
+		err := s.ar.UpdateCashBalance(transaction.AccountId, transaction.Amount, transaction.Kind)
 
-	//---Init check belong account---
-	belongsAccount, err := s.ar.BelongsToUser(transaction.Account, userID)
-
-	if err != nil {
-		return errors.New("Something went wrong")
-	}
-
-	if !belongsAccount {
-		return errors.New("The selected account not belongs to you")
-	}
-	//---End check account---
-
-	//--Init update cash balance---
-	err = s.ar.UpdateCashBalance(transaction.Account, transaction.Amount, transaction.Type)
-
-	if err != nil {
-		return ErrCantUpdateBalance
+		if err != nil {
+			return ErrCantUpdateBalance
+		}
 	}
 	//---End update cash balance---
-
-	if req.Currency != accountCurrency || accountCurrency == 0 {
-		return ErrTransactionNotCorrectCurrency
-	}
-
-	err = s.tr.Add(transaction)
+	err := s.tr.Add(transaction)
 
 	return err
-
 }
 
 func (s *transactionService) GetTotalsByCategory(userId int, from time.Time, to time.Time, category int) ([]dto.CategoryTotal, error) {
