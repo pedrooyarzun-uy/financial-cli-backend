@@ -7,4 +7,5 @@ type AddCreditCardReq struct {
 	CloseDay    int     `json:"close_day"`
 	DueDay      int     `json:"due_day"`
 	CreditLimit float64 `json:"limit"`
+	CurrencyId  int     `json:"currency_id"`
 }

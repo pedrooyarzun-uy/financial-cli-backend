@@ -39,7 +39,7 @@ func add(mux *http.ServeMux, s services.TransactionService) {
 				return
 			}
 
-			if body.Amount == 0 || body.Account == 0 || body.Currency == 0 || body.Type == 0 {
+			if body.Amount == 0 || (body.AccountId == 0 && body.CreditCardId == 0) || body.CurrencyId == 0 || body.Kind == "" || body.PaymentMethod == "" {
 				w.WriteHeader(400)
 				w.Write([]byte("Bad Request"))
 				return
