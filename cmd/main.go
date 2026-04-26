@@ -40,7 +40,7 @@ func main() {
 	//Services
 	us := services.NewUserService(ur)
 	as := services.NewAccountService(ar)
-	ts := services.NewTransactionRepository(tr, ar)
+	ts := services.NewTransactionRepository(tr, ar, ccr)
 	cs := services.NewCurrencyService(cr)
 	bs := services.NewBankService(br)
 	cats := services.NewCategoryService(catr)
