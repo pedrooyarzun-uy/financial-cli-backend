@@ -33,7 +33,6 @@ func main() {
 	cr := repositories.NewCurrencyRepository(db.DB)
 	br := repositories.NewBankRepository(db.DB)
 	catr := repositories.NewCategoryRepository(db.DB)
-	atr := repositories.NewApiTokenRepository(db.DB)
 	sr := repositories.NewSubcategoryRepository(db.DB)
 	ccr := repositories.NewCreditCard(db.DB)
 
@@ -44,7 +43,6 @@ func main() {
 	cs := services.NewCurrencyService(cr)
 	bs := services.NewBankService(br)
 	cats := services.NewCategoryService(catr)
-	ats := services.NewApiTokenService(atr)
 	ss := services.NewSubcategoryService(sr)
 	ccs := services.NewCreditCardService(ccr)
 
@@ -54,7 +52,6 @@ func main() {
 	routes.NewCurrencyRoutes(mux, cs)
 	routes.NewBankRoutes(mux, bs)
 	routes.NewCategoryRoutes(mux, cats)
-	routes.NewApiToken(mux, ats)
 	routes.NewSubcategoryRoutes(mux, ss)
 	routes.NewCreditCardRoutes(mux, ccs)
 
