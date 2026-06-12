@@ -14,14 +14,6 @@ type Transaction struct {
 	CreatedAt     time.Time       `db:"created_at"`
 }
 
-type PaymentMethod string
-
-const (
-	PaymentMethodAccount    PaymentMethod = "account"
-	PaymentMethodCreditCard PaymentMethod = "credit_card"
-	PaymentMethodCash       PaymentMethod = "cash"
-)
-
 type TransactionKind string
 
 const (
