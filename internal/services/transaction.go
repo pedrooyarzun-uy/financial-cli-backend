@@ -32,20 +32,14 @@ func (s *transactionService) Add(req dto.AddTransactionReq, userID int) error {
 		Notes:         req.Notes,
 		Amount:        req.Amount,
 		Kind:          domain.TransactionKind(req.Kind),
-		PaymentMethod: domain.PaymentMethod(req.PaymentMethod),
 		CurrencyId:    req.CurrencyId,
 		CategoryId:    req.CategoryId,
 		SubcategoryId: req.SubcategoryId,
 		AccountId:     req.AccountId,
-		CreditCardId:  req.CreditCardId,
 	}
 
-	if req.AccountId == 0 && req.CreditCardId == 0 {
+	if req.AccountId == 0 {
 		return errors.New("You must select an account or a credit card")
-	}
-
-	if req.AccountId != 0 && req.CreditCardId != 0 {
-		return errors.New("You can only select or an account or a credit card")
 	}
 
 	var currency int
@@ -54,9 +48,6 @@ func (s *transactionService) Add(req dto.AddTransactionReq, userID int) error {
 	if req.AccountId != 0 {
 		currency = s.ar.GetCurrency(req.AccountId)
 		belongs = s.ar.BelongsToUser(transaction.AccountId, userID)
-	} else {
-		currency = s.ccr.GetCurrency(req.CreditCardId)
-		belongs = s.ccr.BelongsToUser(req.CreditCardId, userID)
 	}
 
 	//TODO: Logic for currency convertion.

@@ -6,12 +6,10 @@ type AddTransactionReq struct {
 	Notes         string  `json:"notes"`
 	Amount        float64 `json:"amount" binding:"required"`
 	Kind          string  `json:"kind" binding:"required"`
-	PaymentMethod string  `json:"payment_method" binding:"required"`
 	CurrencyId    int     `json:"currency_id" binding:"required"`
 	CategoryId    int     `json:"category_id"`
 	SubcategoryId int     `json:"subcategory_id"`
 	AccountId     int     `json:"account_id"`
-	CreditCardId  int     `json:"credit_card_id"`
 }
 
 // Begin Method

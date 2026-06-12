@@ -24,9 +24,9 @@ func NewTransactionRepository(db *sqlx.DB) TransactionRepository {
 
 func (r *transactionRepository) Add(transaction domain.Transaction) error {
 	_, err := r.db.NamedExec(`
-		INSERT INTO transaction (notes, amount, kind, payment_method, currency_id, category_id, subcategory_id, account_id, credit_card_id)
+		INSERT INTO transaction (notes, amount, kind, currency_id, category_id, subcategory_id, account_id)
 		VALUES
-		(:notes, :amount, :kind, :payment_method, :currency_id, NULLIF(:category_id, 0), NULLIF(:subcategory_id, 0), NULLIF(:account_id, 0), NULLIF(:credit_card_id, 0))`, transaction)
+		(:notes, :amount, :kind, :currency_id, NULLIF(:category_id, 0), NULLIF(:subcategory_id, 0), NULLIF(:account_id, 0))`, transaction)
 
 	return err
 }
